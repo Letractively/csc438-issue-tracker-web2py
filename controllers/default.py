@@ -1,25 +1,14 @@
 # -*- coding: utf-8 -*-
-# this file is released under public domain and you can use without limitations
-
-#########################################################################
-## This is a samples controller
-## - index is the default action of any application
-## - user is required for authentication and authorization
-## - download is for downloading files uploaded in the db (does streaming)
-## - call exposes all registered services (none by default)
-#########################################################################
 
 def index():
-    """
-    example action using the internationalization operator T and flash
-    rendered by views/default/index.html or views/generic.html
-    """
     return dict(message=T('Hello World'))
 
 
 def projects():
-    COLUMNS=('project.name','project.author','project.repo','project.license')
-    LINKS=[lambda row: A('issues',_href=URL('issues',args=row.id))]
+    COLUMNS=('project.name','project.manager', 'project.phase', 'project.repo')
+    LINKS=[lambda row: A('Subprojects',_href=URL('',args=row.id)),
+           lambda row: A('Issues',_href=URL('issues',args=row.id)),
+           lambda row: A('Team',_href=URL('',args=row.id)) ]
     def check(row): return (row.created_by == auth.user_id)
     grid = SQLFORM.grid(db.project,editable=check,deletable=check,
                         columns = COLUMNS,links=LINKS)

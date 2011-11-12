@@ -1,16 +1,29 @@
-
 def author(form): return '%(first_name)s %(last_name)s' % auth.user
 
+PROJ_PHASE = ('Approved - Not started', 'Design', 'Development', 'Testing', 'Deployement/Maintenance')
+#PRIORITIES = ('Essential','Urgent' )
 db.define_table(
     'project',
     Field('name',unique=True,notnull=True),
-    Field('author',compute=author,writable=False),
+    Field('manager',compute=author,writable=False),
+    Field('phase', requires=IS_IN_SET(PROJ_PHASE,zero=None)),
+    #Field('priority', requires=IS_IN_SET(PRIORITIES,zero=None)),
     Field('description','text'),
+    Field('super_project', 'reference project'),
     Field('license'),
     Field('repo'),
-    Field('members_email','list:string'),
+    #Field('members_email','list:string'),
     auth.signature,
-    format = '%(name)s'),
+    format = '%(name)s')
+db.project.super_project.requires=IS_IN_DB(db,'project.id')
+    
+db.define_table ('team',
+    Field('team_name'),
+    Field('team_lead', 'reference auth_user'),
+    Field('user_id', 'list:reference auth_user'),
+    format = '%(team_name)s'
+    )
+
 
 STATUSES = ('New','Accepted','Started',
             'Fixed','Verified','Invalid','Duplicate',
@@ -75,4 +88,3 @@ extra['code_java'] = lambda code: CODE(code,language='java').xml()
 extra['code_html_plain'] = lambda code: CODE(code,language='html_plain').xml()
 extra['code_html'] = lambda code: CODE(code,language='html').xml()
 extra['code_web2py'] = lambda code: CODE(code,language='web2py').xml()
-        
