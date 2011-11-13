@@ -1,28 +1,32 @@
 def author(form): return '%(first_name)s %(last_name)s' % auth.user
 
 PROJ_PHASE = ('Approved - Not started', 'Design', 'Development', 'Testing', 'Deployement/Maintenance')
-#PRIORITIES = ('Essential','Urgent' )
+#PRIORITIES = ('Critical','Major','Minor','Trivial')
 db.define_table(
     'project',
     Field('name',unique=True,notnull=True),
-    Field('manager',compute=author,writable=False),
+    Field('author',compute=author,writable=False),
+    Field('manager', 'reference auth_user'),
     Field('phase', requires=IS_IN_SET(PROJ_PHASE,zero=None)),
     #Field('priority', requires=IS_IN_SET(PRIORITIES,zero=None)),
     Field('description','text'),
-    Field('super_project', 'reference project'),
+    Field('super_project','reference project',notnull=False),
     Field('license'),
     Field('repo'),
-    #Field('members_email','list:string'),
+    Field('members_email','list:string'),
     auth.signature,
-    format = '%(name)s')
-db.project.super_project.requires=IS_IN_DB(db,'project.id')
+    format = '%(name)s'
+    )
+#db.project.super_project.requires=IS_IN_DB(db,'project.id')
     
 db.define_table ('team',
-    Field('team_name'),
-    Field('team_lead', 'reference auth_user'),
-    Field('user_id', 'list:reference auth_user'),
+    Field('team_name',unique=True,notnull=True),
+    Field('team_lead', db.auth_user,required=False),
+    Field('members', 'list:reference auth_user'),
+    Field('assigned_projects', 'list:reference project'),
     format = '%(team_name)s'
     )
+db.team.id.readable=db.team.id.writable=False
 
 
 STATUSES = ('New','Accepted','Started',

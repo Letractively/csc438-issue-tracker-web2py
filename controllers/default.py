@@ -6,13 +6,30 @@ def index():
 
 def projects():
     COLUMNS=('project.name','project.manager', 'project.phase', 'project.repo')
-    LINKS=[lambda row: A('Subprojects',_href=URL('',args=row.id)),
+    LINKS=[lambda row: A('Subprojects',_href=URL('projects',args=row.id)),
            lambda row: A('Issues',_href=URL('issues',args=row.id)),
-           lambda row: A('Team',_href=URL('',args=row.id)) ]
-    def check(row): return (row.created_by == auth.user_id)
-    grid = SQLFORM.grid(db.project,editable=check,deletable=check,
+           lambda row: A('Team',_href=URL('teams',args=row.id)) ]
+    def check(row): return ((row.created_by == auth.user_id)|(row.manager == auth.user_id))
+    if (request.args(0)):
+        query = (db.project.super_project==request.args(0))
+        #name = 'The subprojects of: '+ str(db(db.project.id==request.args(0)).select(db.project.name)).lstrip('project.name ')
+    else:
+        query = db.project
+        #name = 'Project directory'
+    grid = SQLFORM.grid(query,editable=check,deletable=check,
                         columns = COLUMNS,links=LINKS)
+    return dict(grid=grid)#name=name)
+    
+def teams():
+    #should a project manager edit a team? what if is good for a project but not for other?
+    def check(row): return (row.team_lead == auth.user_id)
+    if (request.args(0)):
+        query = (db.team.assigned_projects==request.args(0))
+    else:
+        query = db.team
+    grid=SQLFORM.grid(query,editable=check,deletable=check)
     return dict(grid=grid)
+    
 
 def issues():
     project = db.project(request.args(0)) or redirect(URL('projects'))
