@@ -5,23 +5,24 @@ def index():
 
 """create new issue service """
 
-#def newissue(pid, smy, des, own):
+
 @service.xmlrpc
-def newissue():
+def newissue(pid, smy, des, own):
+#def newissue():
     from gluon.utils import web2py_uuid 
     
     """set variables"""
-    #projectIn=pid
-    projectIn = 1
+    projectIn=pid
+    #projectIn = 1
     
-    #summaryIn=smy
-    summaryIn = 'test test 123'
+    summaryIn=smy
+    #summaryIn = 'test test 123'
     
-    #descriptionIn=des
-    descriptionIn = 'test test 123'
+    descriptionIn=des
+    #descriptionIn = 'test test 123'
     
-    #ownerIn=own
-    ownerIn = 'bmbarnard@gmail.com'
+    ownerIn=own
+    #ownerIn = 'bmbarnard@gmail.com'
     
     statusIn='New'
     uuidIn=web2py_uuid()
