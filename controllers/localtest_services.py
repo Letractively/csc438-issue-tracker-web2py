@@ -19,10 +19,10 @@ def newissue_test():
     """call service"""
     import xmlrpclib
     server=xmlrpclib.ServerProxy('http://127.0.0.1:8000/issue_tracker/services/call/xmlrpc')
-    #return str(server.newissue(projectIn, summaryIn, descriptionIn, ownerIn))
     
     try:
-        result = server.newissue()
+        #result = server.newissue()
+        result = server.newissue(projectIn, summaryIn, descriptionIn, ownerIn)
     except xmlrpclib.Fault, err:
         result = 'an error occurred'
         result += str(err.faultCode)
