@@ -1,11 +1,15 @@
-def author(form): return '%(first_name)s %(last_name)s' % auth.user
+#def author(form): return '%(first_name)s %(last_name)s' % auth.user
+
+"""set auth settings to allow basic auth"""
+auth.settings.allow_basic_login = True
 
 PROJ_PHASE = ('Approved - Not started', 'Design', 'Development', 'Testing', 'Deployement/Maintenance')
 #PRIORITIES = ('Critical','Major','Minor','Trivial')
 db.define_table(
     'project',
     Field('name',unique=True,notnull=True),
-    Field('author',compute=author,writable=False),
+    #Field('author',compute=author,writable=False),
+    Field('author'),
     Field('manager', 'reference auth_user'),
     Field('phase', requires=IS_IN_SET(PROJ_PHASE,zero=None)),
     #Field('priority', requires=IS_IN_SET(PRIORITIES,zero=None)),
@@ -51,7 +55,8 @@ db.define_table(
     Field('cc','list:string',writable=False, readable=False),
     Field('send_email','boolean',default=True),
     Field('labels','list:string'),
-    Field('author',compute=author,writable=False,readable=True),
+    #Field('author',compute=author,writable=False,readable=True),
+    Field('author'),
     Field('is_last','boolean',default=True,readable=False,writable=False),
     auth.signature, format='%(summary)s')
 
