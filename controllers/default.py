@@ -21,7 +21,6 @@ def projects():
     return dict(grid=grid)#name=name)
     
 def teams():
-    #should a project manager edit a team? what if is good for a project but not for other?
     def check(row): return (row.team_lead == auth.user_id)
     if (request.args(0)):
         query = (db.team.assigned_projects==request.args(0))
