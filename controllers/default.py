@@ -41,7 +41,7 @@ def issues():
                 ['Fixed','Verified','Invalid','Duplicate','WontFix','Done']))
     elif status!='All':
         query = query&(db.issue.status==status)
-
+    """comment"""
     from gluon.utils import web2py_uuid
     db.issue.project.default = project.id
     db.issue.uuid.default = web2py_uuid()
