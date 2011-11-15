@@ -8,7 +8,6 @@ def index():
 
 @service.xmlrpc
 def newissue(pid, smy, des, own):
-#def newissue():
     from gluon.utils import web2py_uuid 
     
     """set variables"""
@@ -34,8 +33,9 @@ def newissue(pid, smy, des, own):
     return str(result)
 
 @service.xmlrpc
-def test():
-    return 'test'
+def ping():
+    from socket import gethostname
+    return 'successful response from issue_tracker service at: ' + gethostname()
 
 """service call handler"""
 """@auth.requires_login"""
