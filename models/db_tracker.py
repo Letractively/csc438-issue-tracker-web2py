@@ -14,14 +14,14 @@ db.define_table(
     Field('phase', requires=IS_IN_SET(PROJ_PHASE,zero=None)),
     #Field('priority', requires=IS_IN_SET(PRIORITIES,zero=None)),
     Field('description','text'),
-    Field('super_project','reference project'),
+    Field('super_project','reference project',notnull=False),
     Field('license'),
     Field('repo'),
     Field('members_email','list:string'),
     auth.signature,
     format = '%(name)s'
     )
-db.project.super_project.requires=IS_EMPTY_OR(IS_IN_DB(db,db.project,'project.name'))
+#db.project.super_project.requires=IS_IN_DB(db,'project.id')
     
 db.define_table ('team',
     Field('team_name',unique=True,notnull=True),
@@ -33,7 +33,7 @@ db.define_table ('team',
 db.team.id.readable=db.team.id.writable=False
 
 
-STATUSES = ('New','Accepted','Started',
+STATUSES = ('New','Accepted','Started', 'Assigned',
             'Fixed','Verified','Invalid','Duplicate',
             'WontFix','Done')
 DESCRIPTION = """
@@ -59,6 +59,17 @@ db.define_table(
     Field('author'),
     Field('is_last','boolean',default=True,readable=False,writable=False),
     auth.signature, format='%(summary)s')
+
+db.define_table(
+    'issue_dependencies',
+    Field('issue','reference issue', writable=False),
+    Field('dependent','reference issue', requires=IS_IN_DB(db,db.issue.summary)))
+    
+db.define_table(
+    'issue_assignment',
+    Field('issue', 'reference issue',readable=False, writable=False),
+    Field('assigned_by',requires=IS_IN_DB(db,db.auth_user.email)),
+    Field('assigned_date','datetime'))
 
 
 db.project.is_active.writable=db.project.is_active.readable=False
