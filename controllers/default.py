@@ -35,7 +35,7 @@ def issues():
     status = request.args(1)
     query = (db.issue.project == project.id)&(db.issue.is_last==True)
     if not status or status=='Open':
-        query = query&(db.issue.status.belongs(['New','Accepted','Started']))
+        query = query&(db.issue.status.belongs(['New','Assigned','Accepted','Started']))
     elif status=='Closed':
         query = query&(db.issue.status.belongs(
                 ['Fixed','Verified','Invalid','Duplicate','WontFix','Done']))
@@ -56,7 +56,8 @@ def issues():
         db.issue.status.writable = False
     COLUMNS=('issue.status','issue.summary','issue.created_on',
              'issue.author','issue.labels')
-    LINKS=[lambda row: A('issue',_href=URL('issue',args=row.uuid))]
+    LINKS=[lambda row: A('issue',_href=URL('issue',args=row.uuid)),lambda row2:A('assign',_href=URL('assign',args=row2.uuid)),
+           lambda row3: A('dependencies',_href=URL('dependencies',args=row3.id))]
     grid = SQLFORM.grid(query, columns = COLUMNS,links=LINKS,
                         details=False,editable=False,
                         deletable=project.created_on==auth.user_id,
@@ -92,6 +93,54 @@ def issue():
     if isinstance(form,FORM) and form.accepted: do_mail(items)
     return dict(project=project,form=form,items=items,last=last)
 
+@auth.requires_login()
+def assign():
+    issue = request.args(0)
+    issue = db(db.issue.uuid==issue).select().first()
+    project = db.project(issue.project) or redirect(URL('projects'))
+    if auth.user:
+        db.issue.status.default = issue.status
+        db.issue.summary.default = issue.summary
+        db.issue.project.default = issue.project
+        db.issue.uuid.default = issue.uuid
+        db.issue.is_last.default = True
+        db.issue.owner.default = issue.owner
+        db.issue.labels.default = issue.labels
+        if not (auth.user.id == project.created_by or \
+                    auth.user.email == issue.owner or \
+                    auth.user.email in (project.members_email or [])):
+            db.issue.owner.default = project.created_by
+            db.issue.owner.writable = False
+            db.issue.status.writable = False
+        else:
+            db.issue_assignment.assigned_by.default=auth.user.email
+            db.issue_assignment.assigned_by.writable=False
+            
+        form = SQLFORM.factory(db.issue, db.issue_assignment)
+        if form.process().accepted:
+            db.issue.is_last.default=False
+            #issue.update_record(is_last=False)
+            issue.update_record(**db.issue._filter_fields(form.vars))
+            form.vars.issue=issue.id
+            id = db.issue_assignment.insert(**db.issue_assignment._filter_fields(form.vars))
+            redirect(URL('projects'))
+    else:
+        form = DIV('login to assign')
+    
+    return dict(form=form)
+
+def dependencies():
+    id= request.args(0)
+    issue = db(db.issue.id==id).select().first()
+    query = (db.issue_dependencies.issue==issue.id)
+    db.issue_dependencies.issue.default=issue.id
+    db.issue_dependencies.issue.writable=False
+    COLUMNS=('issue_dependencies.dependent',)
+    LINKS=[lambda row: A('detail',_href=URL('issue',args=row.dependent.id))]
+    grid = SQLFORM.grid(query,editable=False,deletable=True, columns=COLUMNS,links=LINKS,
+                        details=False,create=auth.user_id,args=[id])        
+    return dict(grid=grid)
+    
 def user():
     """
     exposes:
