@@ -15,7 +15,7 @@ else:
 
 ## by default give a view/generic.extension to all actions from localhost
 ## none otherwise. a pattern can be 'controller/function.extension'
-response.generic_patterns = ['*'] if request.is_local else []
+response.generic_patterns = ['*'] # if request.is_local else []
 
 #########################################################################
 ## Here is sample code if you need for
