@@ -14,14 +14,14 @@ db.define_table(
     Field('phase', requires=IS_IN_SET(PROJ_PHASE,zero=None)),
     #Field('priority', requires=IS_IN_SET(PRIORITIES,zero=None)),
     Field('description','text'),
-    Field('super_project','reference project',notnull=False),
+    Field('super_project','reference project'),
     Field('license'),
     Field('repo'),
     Field('members_email','list:string'),
     auth.signature,
     format = '%(name)s'
     )
-#db.project.super_project.requires=IS_IN_DB(db,'project.id')
+db.project.super_project.requires=IS_EMPTY_OR(IS_IN_DB(db,db.project,'project.name'))
     
 db.define_table ('team',
     Field('team_name',unique=True,notnull=True),
