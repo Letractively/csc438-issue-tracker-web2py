@@ -1,14 +1,21 @@
 # -*- coding: utf-8 -*-
+
 """
-samlple variables
+samlple variables as they would be defined in config file (models/plugin_issuetracker.py)
 plugin_issuetracker_host='test'
 plugin_issuetracker_user='bmbarnard'
 plugin_issuetracker_pwd=''
 plugin_issuetracker_projectid=1
 """
 
+"""
+ping calls the ping function of the remote issue tracker application to test connectivity
+"""
 def ping():
+
+    """import the xmlrpcib library to be able to make rpc calls""" 
     import xmlrpclib
+    
     server=xmlrpclib.ServerProxy(plugin_issuetracker_host)
     
     try:
@@ -19,7 +26,11 @@ def ping():
         result += err.faultString
     return dict(result=result) 
 
-"""default index function for testing"""
+
+"""
+index function for debuging the variables that are defined in the config file for plugin_issuetracker
+these are set at models/plugin_issuetracker.py
+"""
 def index():    
     return dict(message='plugin_issuetracker config variables',
     issuetracker_host=plugin_issuetracker_host,
@@ -27,28 +38,33 @@ def index():
     issuetracker_pwd=plugin_issuetracker_pwd,
     issuetracker_projectid=plugin_issuetracker_projectid)
 
-"""submit new issue to remote issue_tracker"""
+
+"""
+submit new issue to remote issue_tracker
+"""
 def postnewissue():
+    
+    """import the xmlrpcib library to be able to make rpc calls""" 
+    import xmlrpclib 
+    
     result=''    
-    form = SQLFORM.factory(
+   
+   """define form for accepting variables for issue""" 
+   form = SQLFORM.factory(
         Field('summary', requires=IS_NOT_EMPTY()),
         Field('description', requires=IS_NOT_EMPTY()),
         Field('owner', requires=IS_NOT_EMPTY()))
     
     #handle submission
     if form.process().accepted:
-        
-        import xmlrpclib
+       
+        """get variables from config file (models/plugin_issuetracker.py)"""
         server=xmlrpclib.ServerProxy(plugin_issuetracker_host)
         projectid=issuetracker_projectid=plugin_issuetracker_projectid
-        
-        #summary='test from plugin'
+       
+        """get variables from the form"""
         summary=form.vars.summary
-        
-        #description='test description from plugin'
         description=form.vars.description
-        
-        #owner='bmbarnard@gmail.com'
         owner=form.vars.owner
 
         """attempt to submit new issue to remote tracker"""
