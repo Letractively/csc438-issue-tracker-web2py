@@ -49,11 +49,11 @@ def postnewissue():
     
     result=''    
    
-   """define form for accepting variables for issue""" 
-   form = SQLFORM.factory(
-        Field('summary', requires=IS_NOT_EMPTY()),
-        Field('description', requires=IS_NOT_EMPTY()),
-        Field('owner', requires=IS_NOT_EMPTY()))
+    """define form for accepting variables for issue""" 
+    form = SQLFORM.factory(
+    Field('summary', requires=IS_NOT_EMPTY()),
+    Field('description', requires=IS_NOT_EMPTY()),
+    Field('owner', requires=IS_NOT_EMPTY()))
     
     #handle submission
     if form.process().accepted:
