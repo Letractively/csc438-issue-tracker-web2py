@@ -72,16 +72,16 @@ def postnewissue():
             result=server.newissue(projectid, summary, description, owner)
             result=str(result)
             result='New Issue Submitted. Issue Number: ' + result
+            response.flash=result
         except xmlrpclib.Fault, err:
             result = 'an error occurred '
             result += str(err.faultCode)
             result += err.faultString
-            session.flash='Error submitting issue to remote issue tracker'
+            response.flash='Error submitting issue to remote issue tracker'
     elif form.errors:
-        session.flash='form has errors'
-    else:
-        session.flash='form cannot be blank'
-    return dict(form=form,result=result)
+        response.flash='form has errors'
+    
+    return dict(form=form)
 
     
 """
