@@ -10,7 +10,7 @@
 
 <script>
 jQuery('#myform').submit(function() {
-    ajax('{{=URL('postnew')}}',['summary','description','owner'], 'target');
+    ajax('{{=URL('post')}}',['summary','description','owner'], 'target');
     return false;
 });
 </script>

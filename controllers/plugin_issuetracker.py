@@ -88,7 +88,7 @@ def postnewissue():
 submit new issue to remote issue_tracker, by receiving variables from a post
 most likely an ajax post
 """
-def postnew():
+def post():
     import xmlrpclib
         
     """validate inputs"""
@@ -118,3 +118,6 @@ def postnew():
         result += str(err.faultCode)
         result += err.faultString
     return str(result)
+
+def postajax():
+    return dict(test='test')
