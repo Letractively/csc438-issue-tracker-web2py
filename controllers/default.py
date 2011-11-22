@@ -5,7 +5,7 @@ def index():
 
 
 def projects():
-    COLUMNS=('project.name','project.manager', 'project.phase', 'project.repo')
+    FIELDS=(db.project.id,db.project.name,db.project.created_by,db.project.manager,db.project.phase,db.project.repo)
     LINKS=[lambda row: A('Subprojects',_href=URL('projects',args=row.id)),
            lambda row: A('Issues',_href=URL('issues',args=row.id)),
            lambda row: A('Team',_href=URL('teams',args=row.id)) ]
@@ -17,16 +17,25 @@ def projects():
         query = db.project
         #name = 'Project directory'
     grid = SQLFORM.grid(query,editable=check,deletable=check,
-                        columns = COLUMNS,links=LINKS)
+                        fields = FIELDS,links=LINKS)
     return dict(grid=grid)#name=name)
     
 def teams():
-    def check(row): return (row.team_lead == auth.user_id)
+    def check(row): 
+        return (row.team_lead == auth.user_id)
     if (request.args(0)):
         query = (db.team.assigned_projects==request.args(0))
     else:
         query = db.team
     grid=SQLFORM.grid(query,editable=check,deletable=check)
+    return dict(grid=grid)
+    
+    
+@auth.requires_membership('managers')
+def roles():
+    manager_id = db(db.auth_group.role == 'managers').select().first().id
+    query = (db.auth_membership.group_id == manager_id)
+    grid = SQLFORM.grid(query,editable=False)
     return dict(grid=grid)
     
 
@@ -54,11 +63,12 @@ def issues():
             auth.user.email in (project.members_email or [])):
         db.issue.owner.writable = False
         db.issue.status.writable = False
-    COLUMNS=('issue.status','issue.summary','issue.created_on',
-             'issue.author','issue.labels')
+    #COLUMNS=('issue.status','issue.summary','issue.created_on',
+    #         'issue.author','issue.labels')
+    FIELDS=(db.issue.id,db.issue.uuid,db.issue.status,db.issue.summary,db.issue.created_on,db.issue.author,db.issue.labels,)
     LINKS=[lambda row: A('issue',_href=URL('issue',args=row.uuid)),lambda row2:A('assign',_href=URL('assign',args=row2.uuid)),
            lambda row3: A('dependencies',_href=URL('dependencies',args=row3.id))]
-    grid = SQLFORM.grid(query, columns = COLUMNS,links=LINKS,
+    grid = SQLFORM.grid(query, fields = FIELDS,links=LINKS,
                         details=False,editable=False,
                         deletable=project.created_on==auth.user_id,
                         create=auth.user_id,args=[project.id],
@@ -135,9 +145,10 @@ def dependencies():
     query = (db.issue_dependencies.issue==issue.id)
     db.issue_dependencies.issue.default=issue.id
     db.issue_dependencies.issue.writable=False
-    COLUMNS=('issue_dependencies.dependent',)
+    #COLUMNS=('issue_dependencies.dependent',)
+    FIELDS=(db.issue_dependencies.dependent,)
     LINKS=[lambda row: A('detail',_href=URL('issue',args=row.dependent.id))]
-    grid = SQLFORM.grid(query,editable=False,deletable=True, columns=COLUMNS,links=LINKS,
+    grid = SQLFORM.grid(query,editable=False,deletable=True, fields=FIELDS,links=LINKS,
                         details=False,create=auth.user_id,args=[id])        
     return dict(grid=grid)
     
