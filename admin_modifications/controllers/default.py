@@ -1324,8 +1324,10 @@ def reload_routes():
     import gluon.rewrite
     gluon.rewrite.load()
     redirect(URL('site'))
-    
-"""submit new issue to issue tracker"""
+
+#####plugin_issuetracker integration####################
+#adding functionality to enable submission of issue from errors page     
+#submit new issue to issue tracker
 def newissue():
     
     result=''
