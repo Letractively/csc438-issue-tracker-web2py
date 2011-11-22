@@ -66,20 +66,15 @@ db.define_table(
     Field('is_last','boolean',default=True,readable=False,writable=False),
     auth.signature, format='%(summary)s')
 db.issue.super_issue.requires=IS_EMPTY_OR(IS_IN_DB(db,'issue.id'))
-
-
-#db.define_table(
-#    'issue_dependencies',
-#    Field('issue','reference issue', writable=False),
-#    Field('dependent','reference issue', requires=IS_IN_DB(db,db.issue.summary)))
-
     
 db.define_table(
     'issue_assignment',
-    Field('issue', 'reference issue',readable=False, writable=False),
+    Field('issue', 'reference issue'),
     Field('assigned_by',requires=IS_IN_DB(db,db.auth_user.email)),
+    Field('assigned_to','list:reference auth_user'),
     Field('assigned_date','datetime'))
-
+#dbset = db(db.team.assigned_projects==db.issue.project)
+#db.issue_assignment.assigned_to.requires = IS_IN_DB(dbset, 'auth_user.id')
 
 db.project.is_active.writable=db.project.is_active.readable=False
 db.issue.is_active.writable=db.issue.is_active.readable=False
