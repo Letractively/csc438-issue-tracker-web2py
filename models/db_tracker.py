@@ -9,7 +9,7 @@ db.define_table(
     'project',
     Field('name',unique=True,notnull=True),
     #Field('author',compute=author,writable=False),
-    Field('author'),
+    #Field('author'),
     Field('manager', 'reference auth_user'),
     Field('phase', requires=IS_IN_SET(PROJ_PHASE,zero=None)),
     #Field('priority', requires=IS_IN_SET(PRIORITIES,zero=None)),
@@ -21,7 +21,12 @@ db.define_table(
     auth.signature,
     format = '%(name)s'
     )
-#db.project.super_project.requires=IS_IN_DB(db,'project.id')
+db.project.super_project.requires=IS_EMPTY_OR(IS_IN_DB(db,'project.id'))
+#enforce membership to "managers"
+group = db(db.auth_group.role == 'manager').select().first().id
+dbset = db(db.auth_membership.group_id == group)
+#TODO - fetch the name of the managers in the form
+db.project.manager.requires = IS_IN_DB(dbset, 'auth_membership.user_id')
     
 db.define_table ('team',
     Field('team_name',unique=True,notnull=True),
@@ -52,6 +57,7 @@ db.define_table(
     Field('attachment','upload'),
     Field('status',requires=IS_IN_SET(STATUSES,zero=None)),
     Field('owner',requires=IS_IN_DB(db,db.auth_user.email)),
+    Field('super_issue','reference issue',notnull=False),
     Field('cc','list:string',writable=False, readable=False),
     Field('send_email','boolean',default=True),
     Field('labels','list:string'),
@@ -59,11 +65,14 @@ db.define_table(
     Field('author'),
     Field('is_last','boolean',default=True,readable=False,writable=False),
     auth.signature, format='%(summary)s')
+db.issue.super_issue.requires=IS_EMPTY_OR(IS_IN_DB(db,'issue.id'))
 
-db.define_table(
-    'issue_dependencies',
-    Field('issue','reference issue', writable=False),
-    Field('dependent','reference issue', requires=IS_IN_DB(db,db.issue.summary)))
+
+#db.define_table(
+#    'issue_dependencies',
+#    Field('issue','reference issue', writable=False),
+#    Field('dependent','reference issue', requires=IS_IN_DB(db,db.issue.summary)))
+
     
 db.define_table(
     'issue_assignment',
