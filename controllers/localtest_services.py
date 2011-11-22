@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-"""call the test webservice"""
+#call the test webservice
 def test():
     import xmlrpclib
     server=xmlrpclib.ServerProxy('http://127.0.0.1:8000/issue_tracker/services/call/xmlrpc')
     return str(server.test())
 
 
-"""xmlrpc call to create new issue"""
+#xmlrpc call to create new issue
 def newissue_test():
     import xmlrpclib
     from gluon.utils import web2py_uuid 
@@ -16,7 +16,7 @@ def newissue_test():
     descriptionIn='test description services'
     ownerIn='bmbarnard@gmail.com'
     
-    """call service"""
+    #call service
     import xmlrpclib
     server=xmlrpclib.ServerProxy('http://127.0.0.1:8000/issue_tracker/services/call/xmlrpc')
     
