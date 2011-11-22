@@ -39,13 +39,18 @@ Controllers
 Files modified specifically to allow the submission of issues from the admin/errors controller
 Controllers
 - admin/controllers/default.py  - addition of new function 'newissue' - this allows for the submission of issues from tickets via xmlrpc calls.
+       - addtition of 'assign' function: controller action that allows user to assign issues to other members of project team
+       - addition of 'dependencies' function: controller action that allows user to view an issues dependencies and add new dependencies
 
 Views
 - admin/views/default/newissue.html - view to handle new function, newissue
 - admin/views/default/errors.html - modify to add submit issue to the list of errors listed for any application
+- admin/views/default/assign.html - view to handle assign controller action
+- admin/views/default/dependencies.html - view to handle dependencies controller action
 
 Models
 - admin/models/issuetracker.py - settings for issuetracker
+- admin/models/db_tracker.py - defines tables for issue tracker app
 
 Plugin adds functionality to any app to be able to submit issues to a linked issue tracker, using xmlrpc services and ajax
 -- update license and about pages
