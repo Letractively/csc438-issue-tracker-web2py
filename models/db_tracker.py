@@ -22,7 +22,7 @@ db.define_table(
     format = '%(name)s'
     )
 db.project.super_project.requires=IS_EMPTY_OR(IS_IN_DB(db,'project.id'))
-#enforce membership to "managers"
+#enforce membership to "manager"
 group = db(db.auth_group.role == 'manager').select().first().id
 dbset = db(db.auth_membership.group_id == group)
 #TODO - fetch the name of the managers in the form
