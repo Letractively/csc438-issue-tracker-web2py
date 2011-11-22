@@ -12,9 +12,10 @@ def ping():
     #import the xmlrpcib library to be able to make rpc calls
     import xmlrpclib
     
-    #http://bmbarnard@gmail.com:yitbos@127.0.0.1:8000/issue_tracker/services/call/xmlrpc
-    server=xmlrpclib.ServerProxy(plugin_issuetracker_host)
+    #attempting call using basic auth, still receiving 500 Errors
     #server=xmlrpclib.ServerProxy('http://b@b.com:yitbos@127.0.0.1:8000/issue_tracker/services/call/xmlrpc', verbose=True)
+    server=xmlrpclib.ServerProxy(plugin_issuetracker_host)
+    
     
     try:
         result=server.ping()
