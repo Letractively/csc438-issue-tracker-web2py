@@ -32,9 +32,9 @@ def teams():
     return dict(grid=grid)
     
     
-@auth.requires_membership('managers')
+@auth.requires_membership('manager')
 def roles():
-    manager_id = db(db.auth_group.role == 'managers').select().first().id
+    manager_id = db(db.auth_group.role == 'manager').select().first().id
     query = (db.auth_membership.group_id == manager_id)
     grid = SQLFORM.grid(query,editable=False)
     return dict(grid=grid)
@@ -107,7 +107,7 @@ def issue():
     if isinstance(form,FORM) and form.accepted: do_mail(items)
     return dict(project=project,form=form,items=items,last=last)
 
-@auth.requires_membership('managers')
+@auth.requires_membership('manager')
 def assign():
     from datetime import datetime
     if (request.args(0)):
@@ -123,7 +123,7 @@ def assign():
     grid=SQLFORM.grid(query)
     return dict(grid=grid)
 
-@auth.requires_membership('managers')
+@auth.requires_membership('manager')
 def escalate():
     issueID=request.args(0)
     reference_project= db(db.issue.id==issueID).select().first()
