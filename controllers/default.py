@@ -5,6 +5,7 @@ def index():
 
 
 def projects():
+    #COLUMNS=('project.name','project.author','project.repo','project.license')
     FIELDS=(db.project.id,db.project.name,db.project.created_by,db.project.manager,db.project.phase,db.project.repo)
     LINKS=[lambda row: A('Subprojects',_href=URL('projects',args=row.id)),
            lambda row: A('Issues',_href=URL('issues',args=row.id)),
@@ -41,8 +42,11 @@ def roles():
 
 def issues():
     project = db.project(request.args(0)) or redirect(URL('projects'))
-    status = request.args(1)
+    status = request.args(2)
+    #TODO- show issues of the subprojects
     query = (db.issue.project == project.id)&(db.issue.is_last==True)
+    if (request.args(1)):
+        query = query&(db.issue.super_issue==request.args(1))
     if not status or status=='Open':
         query = query&(db.issue.status.belongs(['New','Assigned','Accepted','Started']))
     elif status=='Closed':
@@ -66,7 +70,9 @@ def issues():
     #COLUMNS=('issue.status','issue.summary','issue.created_on',
     #         'issue.author','issue.labels')
     FIELDS=(db.issue.id,db.issue.uuid,db.issue.status,db.issue.summary,db.issue.created_on,db.issue.author,db.issue.labels,)
-    LINKS=[lambda row: A('issue',_href=URL('issue',args=row.uuid)),lambda row2:A('assign',_href=URL('assign',args=row2.uuid)),
+    LINKS=[lambda row: A('Details',_href=URL('issue',args=row.uuid)),
+           lambda row: A('Sub-issues',_href=URL('issues',args=[project.id,row.id])),
+           lambda row2:A('assign',_href=URL('assign',args=row2.uuid)),
            lambda row3: A('dependencies',_href=URL('dependencies',args=row3.id))]
     grid = SQLFORM.grid(query, fields = FIELDS,links=LINKS,
                         details=False,editable=False,
@@ -146,7 +152,7 @@ def dependencies():
     db.issue_dependencies.issue.default=issue.id
     db.issue_dependencies.issue.writable=False
     #COLUMNS=('issue_dependencies.dependent',)
-    FIELDS=(db.issue_dependencies.dependent,)
+    FIELDS=(db.issue_dependencies.id,db.issue_dependencies.dependent,)
     LINKS=[lambda row: A('detail',_href=URL('issue',args=row.dependent.id))]
     grid = SQLFORM.grid(query,editable=False,deletable=True, fields=FIELDS,links=LINKS,
                         details=False,create=auth.user_id,args=[id])        
