@@ -1,4 +1,12 @@
-Issue Tracker Project Documentation
+CSC 438 Issue Tracker Project Documentation
+ 
+Project Contributors:
+Adrian Petras
+Derek Simmons
+Bryan Barnard
+
+Application Hosting: http://nardbard.pythonanywhere.com/newtracker (provided by pythonanywhere)
+Source Hosting: http://code.google.com/p/csc438-issue-tracker-web2py/ (provided by Google Code)
  
 Controllers
 - controllers/services.py
