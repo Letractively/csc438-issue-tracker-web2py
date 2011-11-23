@@ -1,6 +1,28 @@
-"The Web2py Issue Tracker Plugin allows you to add functionality to any web2py app to be able to submit issues to a linked issue tracker, using xmlrpc services and ajax"
+Issue Tracker Project Documentation
+ 
+Controllers
+- controllers/services.py
+-- Functions
+--- ping: simple response to send hostname and text in response to ping request, indicating the connection was made and it is responding
+--- call: endpoint that routes xmlrpc calls to service functions (ping and new issue)
+--- newissue: receives input for issue specific variables, including project id, summary, description, and owner and inserts a new record into the issue tracker db.
+
+- controllers/default.py
+-- Functions
+--- addtition of 'assign' function: controller action that allows user to assign issues to other members of project team
+--- addition of 'dependencies' function: controller action that allows user to view an issues dependencies and add new dependencies
+
+Views
+- views/default/assign.html - view to handle assign controller action
+- views/default/dependencies.html - view to handle dependencies controller action
+
+Models
+- models/db_tracker.py - defines tables for issue tracker app
+
 
 Plugin_IssueTracker Installation and use instructions:
+
+"The Web2py Issue Tracker Plugin allows you to add functionality to any web2py app to be able to submit issues to a linked issue tracker, using xmlrpc services and ajax"
 
 - Basic Usage
 
@@ -53,27 +75,6 @@ models/plugin_issuetracker.py - used as a config file to define variables necess
 Static
 - static/plugin_issuetracker/license.html - licensing info for the plugin
 - static/plugin_issuetracker/about.html - general info about the use of the plugin
-
-Issue Tracker Project Manifest
- 
-Controllers
-- controllers/services.py
--- Functions
---- ping: simple response to send hostname and text in response to ping request, indicating the connection was made and it is responding
---- call: endpoint that routes xmlrpc calls to service functions (ping and new issue)
---- newissue: receives input for issue specific variables, including project id, summary, description, and owner and inserts a new record into the issue tracker db.
-
-- controllers/default.py
--- Functions
---- addtition of 'assign' function: controller action that allows user to assign issues to other members of project team
---- addition of 'dependencies' function: controller action that allows user to view an issues dependencies and add new dependencies
-
-Views
-- views/default/assign.html - view to handle assign controller action
-- views/default/dependencies.html - view to handle dependencies controller action
-
-Models
-- models/db_tracker.py - defines tables for issue tracker app
  
 Admin Modifications
 
